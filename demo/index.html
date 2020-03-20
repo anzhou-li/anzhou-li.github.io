@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title>粮仓 webgl 鼠标拖动选转，Ctrl+鼠标拖动移动 （黎安舟）</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+
+	<body>
+        <div id="lc_webgl"></div>
+		<script type="module">
+			import * as THREE from '../build/three.module.js';
+			import { OrbitControls } from './jsm/controls/OrbitControls.js';
+			import { FBXLoader } from './jsm/loaders/FBXLoader.js';
+
+            var scene, renderer,camera;
+
+			init();
+            drawScene();
+
+			function init() 
+            {
+                var container = document.getElementById( 'lc_webgl' );
+
+                renderer = new THREE.WebGLRenderer( { antialias: true } );
+                renderer.setPixelRatio( window.devicePixelRatio );
+                renderer.setSize( window.innerWidth, window.innerHeight );
+                //renderer.shadowMap.enabled = true;
+                container.appendChild( renderer.domElement );
+
+                //  漫游控制
+                camera = new THREE.PerspectiveCamera( 145, window.innerWidth / window.innerHeight, 1, 200000 );
+                camera.position.set( -5408, 12923, 29462 );
+
+                var controls = new OrbitControls( camera, renderer.domElement );
+                controls.target.set( -5408, 0, 29462);
+                controls.update();
+
+				scene = new THREE.Scene();				
+
+               //添加光源
+               var ambientColor = "#fff";
+               var  ambient = new THREE.AmbientLight(ambientColor);
+               ambient.intensity = 2;
+               scene.add(ambient);
+
+               var pointColor = "#f4330a";
+               var pointLight = new THREE.PointLight(pointColor);
+              // pointLight.position.x = 31150;	
+               //pointLight.position.y = 6000;	
+               //pointLight.position.z = 30000;
+               pointLight.position.set(31150,6000,30000);	
+               pointLight.intensity = 5;
+               scene.add(pointLight);
+
+
+				// 加载模型数据
+				var loader = new FBXLoader();
+                loader.load('./lc.FBX', function(object) { scene.add( object ); } );
+
+				window.addEventListener( 'resize', onResize, false );
+			}
+
+			function onResize() 
+            {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+
+			function drawScene() 
+            {
+				requestAnimationFrame( drawScene );
+				renderer.render( scene, camera );	
+            }
+		</script>
+	</body>
+</html>
